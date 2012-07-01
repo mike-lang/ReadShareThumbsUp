@@ -54,7 +54,7 @@
 				});
 			};
 			
-			var showArticleContent = function(articleTitleElement) {
+			var loadAndShowArticleContent = function(articleTitleElement) {
 				var articleRootElement = articleTitleElement.parentNode;
 				var feedUrl = $(articleRootElement).parent().parent().data('feedUrl');
 				var i = $(articleRootElement).data('articleIndex');
@@ -62,8 +62,12 @@
 				feed.load(function(result) {
 					if (!result.error) {
 						var entryContentElement = document.createElement("div");
+						entryContentElement.className = "articleContent";
 						entryContentElement.innerHTML = result.feed.entries[i].content;
-						articleRootElement.appendChild(entryContentElement);
+						entryContentElement.setAttribute('style', 'display: none;');						
+						articleRootElement.appendChild(entryContentElement);						
+						$(entryContentElement).toggle('blind', {}, 500);
+						$(articleRootElement).data('loaded', true);
 					}
 				});
 			};
@@ -71,7 +75,13 @@
 			myModule.Initialize = function() {
 				$(document).ready(function() {
 					$(document).on('click','.articleTitle', function() {
-						showArticleContent(this);
+						var articleRoot = this.parentNode;
+						var loaded = $(articleRoot).data('loaded');
+						if (loaded) {
+							$(articleRoot).find('.articleContent').toggle('blind', {}, 500);
+						} else {
+							loadAndShowArticleContent(this);
+						}
 					});
 					$(document).on('click', '.feedTitle', function() {
 						showFeedArticles(this);
@@ -90,18 +100,7 @@
 			google.load("feeds", "1");
 
 			function initialize() {
-//				var feed = new google.feeds.Feed("http://www.zefrank.com/index.xml");
-//				feed.load(function(result) {
-//					if (!result.error) {
-//						var container = document.getElementById("feed");
-//						for (var i = 0; i < result.feed.entries.length; i++) {
-//							var entry = result.feed.entries[i];
-//							var div = document.createElement("div");
-//							div.appendChild(document.createTextNode(entry.title));
-//							container.appendChild(div);
-//						}
-//					}
-//				});
+
 			return;
 			}
 			google.setOnLoadCallback(initialize);
