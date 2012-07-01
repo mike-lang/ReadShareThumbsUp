@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta content='text/html;charset=UTF-8' http-equiv='content-type' />
+	<title>Read Share Thumbs Up</title>
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js"></script>
+	<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+	<script type="text/javascript">
+		var RSTUModule = (function() {
+			var feedUrls = [];
+		
+			var myModule = {};
+			
+			myModule.AddFeed = function(feedUrl) {
+				feedUrls.push(feedUrl);
+				
+				var feed = new google.feeds.Feed(feedUrl);
+				feed.load(function(result) {
+					if (!result.error) {
+						var feedsContainer = document.getElementById("feedList");
+						var feedElement = document.createElement("li");
+						feedElement.appendChild(document.createTextNode(result.feed.title));
+						feedsContainer.appendChild(feedElement);
+					}
+				});				
+			};
+			
+			return myModule;
+		}());
+	</script>
+	<script type="text/javascript">
+			google.load("feeds", "1");
+
+			function initialize() {
+//				var feed = new google.feeds.Feed("http://www.zefrank.com/index.xml");
+//				feed.load(function(result) {
+//					if (!result.error) {
+//						var container = document.getElementById("feed");
+//						for (var i = 0; i < result.feed.entries.length; i++) {
+//							var entry = result.feed.entries[i];
+//							var div = document.createElement("div");
+//							div.appendChild(document.createTextNode(entry.title));
+//							container.appendChild(div);
+//						}
+//					}
+//				});
+			return;
+			}
+			google.setOnLoadCallback(initialize);
+			
+			$(document).ready(function() {
+				$('#addButton').click(function() {
+					RSTUModule.AddFeed($('#addBox').val());					
+				});
+			});
+	</script>
+
+</head>
+<body>
+	<h1>Read Share Thumbs Up</h1>
+	<h2>The Minimalist RSS Reader</h2>
+	<div id="controls">
+		<input id="addBox" type="text" />
+		<input id="addButton" type="button" value="Add Feed" />
+		
+	</div>
+	<ul id="feedList">
+	</ul>
+</body>
+</html>
