@@ -20,14 +20,71 @@
 					if (!result.error) {
 						var feedsContainer = document.getElementById("feedList");
 						var feedElement = document.createElement("li");
-						feedElement.appendChild(document.createTextNode(result.feed.title));
+						var feedTitleElement = document.createElement("span");
+						feedTitleElement.className = "feedTitle";
+						feedTitleElement.appendChild(document.createTextNode(result.feed.title));
+						feedElement.appendChild(feedTitleElement);
 						feedsContainer.appendChild(feedElement);
+						$(feedElement).data('feedUrl', feedUrl);
 					}
 				});				
 			};
 			
+			var showFeedArticles = function(feedTitleElement) {
+				var feedRootElement = feedTitleElement.parentNode;
+				var feedUrl = $(feedRootElement).data('feedUrl');
+				var feed = new google.feeds.Feed(feedUrl);
+				feed.load(function(result) {
+					if (!result.error) {
+						var entryListElement = document.createElement("ul");
+						for (var i = 0; i < result.feed.entries.length; i++) {
+							var entry = result.feed.entries[i];
+							
+							var entryElement = document.createElement("li");
+							entryElement.className = "entryRoot";
+							var entryTitleElement = document.createElement("span");
+							entryTitleElement.className = "articleTitle";
+							entryTitleElement.appendChild(document.createTextNode(entry.title));							
+							$(entryElement).data('articleIndex', i);
+							entryElement.appendChild(entryTitleElement);
+							entryListElement.appendChild(entryElement);
+						}
+						feedRootElement.appendChild(entryListElement);
+					}
+				});
+			};
+			
+			var showArticleContent = function(articleTitleElement) {
+				var articleRootElement = articleTitleElement.parentNode;
+				var feedUrl = $(articleRootElement).parent().parent().data('feedUrl');
+				var i = $(articleRootElement).data('articleIndex');
+				var feed = new google.feeds.Feed(feedUrl);
+				feed.load(function(result) {
+					if (!result.error) {
+						var entryContentElement = document.createElement("div");
+						entryContentElement.innerHTML = result.feed.entries[i].content;
+						articleRootElement.appendChild(entryContentElement);
+					}
+				});
+			};
+			
+			myModule.Initialize = function() {
+				$(document).ready(function() {
+					$(document).on('click','.articleTitle', function() {
+						showArticleContent(this);
+					});
+					$(document).on('click', '.feedTitle', function() {
+						showFeedArticles(this);
+					});
+					
+
+				});
+			};
+			
 			return myModule;
 		}());
+		
+		RSTUModule.Initialize();
 	</script>
 	<script type="text/javascript">
 			google.load("feeds", "1");
