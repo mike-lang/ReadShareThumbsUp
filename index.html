@@ -13,6 +13,24 @@
 			var myModule = {};
 			
 			myModule.AddFeed = function(feedUrl) {
+				
+				// Notify the srevice that you're adding a feed
+				$.ajax({
+								url:'http://readsharethumbsupservice.apphb.com/Feed/AddFeed', 
+								dataType: 'jsonp',
+								data: {
+										'userName': 'mlang',
+										'feedUrl': feedUrl
+										},
+								success: function(data) {
+									alert('Service AddFeed method said: ' + data.response);
+									// add it to the page if it succeeds
+									addFeedToPage(feedUrl);
+								}									
+						});	
+			};
+			
+			var addFeedToPage = function(feedUrl) {
 				feedUrls.push(feedUrl);
 				
 				var feed = new google.feeds.Feed(feedUrl);
@@ -27,8 +45,8 @@
 						feedsContainer.appendChild(feedElement);
 						$(feedElement).data('feedUrl', feedUrl);
 					}
-				});				
-			};
+				});
+			}
 			
 			var showFeedArticles = function(feedTitleElement) {
 				var feedRootElement = feedTitleElement.parentNode;
@@ -74,6 +92,16 @@
 			
 			myModule.Initialize = function() {
 				$(document).ready(function() {
+				
+					$.ajax({
+						url: 'http://readsharethumbsupservice.apphb.com/Feed/GetFeeds',
+						dataType: 'jsonp',
+						data: { userName: 'mlang' },
+						success: function(data) {
+							return;
+						}
+					});
+					
 					$(document).on('click','.articleTitle', function() {
 						var articleRoot = this.parentNode;
 						var loaded = $(articleRoot).data('loaded');
@@ -94,14 +122,14 @@
 			return myModule;
 		}());
 		
-		RSTUModule.Initialize();
+
 	</script>
 	<script type="text/javascript">
 			google.load("feeds", "1");
 
 			function initialize() {
 
-			return;
+					RSTUModule.Initialize();
 			}
 			google.setOnLoadCallback(initialize);
 			
@@ -115,7 +143,7 @@
 </head>
 <body>
 	<h1>Read Share Thumbs Up</h1>
-	<h2>The Minimalist RSS Reader</h2>
+	<h2>The Minimalist Social RSS Reader</h2>
 	<div id="controls">
 		<input id="addBox" type="text" />
 		<input id="addButton" type="button" value="Add Feed" />
