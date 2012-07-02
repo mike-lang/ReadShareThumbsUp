@@ -5,7 +5,25 @@
 	<title>Read Share Thumbs Up</title>
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js"></script>
+	<script type="text/javascript" src="./js/jquery.tmpl.min.js"></script>
 	<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+	<script id="articleTemplate" type="text/x-jquery-tmpl">
+    <div class='articleContainer' style='display: none;'> <!-- display none cause we jqueryUI toggle them into view -->
+		<div class='articleContent'></div>
+		<div class='articleControls'>
+			<div class='commentControls'>
+			<div>
+				<textarea class='commentBox' type='textarea'></textarea>
+			</div>
+			<div>
+				<input type='button' value='add comment' />
+			</div>
+			</div>
+			<input type='button' value='like' />
+			<input type='button' value='share' />
+		</div>
+	</div>
+	</script>
 	<script type="text/javascript">
 		var RSTUModule = (function() {
 			var feedUrls = [];
@@ -54,7 +72,8 @@
 				var feed = new google.feeds.Feed(feedUrl);
 				feed.load(function(result) {
 					if (!result.error) {
-						var entryListElement = document.createElement("ul");
+						var entryListElement = document.createElement("ul");						
+						entryListElement.className = "articleList";
 						for (var i = 0; i < result.feed.entries.length; i++) {
 							var entry = result.feed.entries[i];
 							
@@ -67,7 +86,10 @@
 							entryElement.appendChild(entryTitleElement);
 							entryListElement.appendChild(entryElement);
 						}
+						entryListElement.setAttribute('style', 'display: none;');
 						feedRootElement.appendChild(entryListElement);
+						$(entryListElement).toggle('blind', {}, 500);
+						$(feedRootElement).data('loaded', true);
 					}
 				});
 			};
@@ -79,12 +101,9 @@
 				var feed = new google.feeds.Feed(feedUrl);
 				feed.load(function(result) {
 					if (!result.error) {
-						var entryContentElement = document.createElement("div");
-						entryContentElement.className = "articleContent";
-						entryContentElement.innerHTML = result.feed.entries[i].content;
-						entryContentElement.setAttribute('style', 'display: none;');						
-						articleRootElement.appendChild(entryContentElement);						
-						$(entryContentElement).toggle('blind', {}, 500);
+						$('#articleTemplate').tmpl().appendTo(articleRootElement);
+						$(articleRootElement).find('.articleContent').html(result.feed.entries[i].content);					
+						$(articleRootElement).find('.articleContainer').toggle('blind', {}, 500);
 						$(articleRootElement).data('loaded', true);
 					}
 				});
@@ -98,6 +117,9 @@
 						dataType: 'jsonp',
 						data: { userName: 'mlang' },
 						success: function(data) {
+							for (var i=0; i<data.length; i++) {
+								addFeedToPage(data[i]);
+							}
 							return;
 						}
 					});
@@ -106,13 +128,19 @@
 						var articleRoot = this.parentNode;
 						var loaded = $(articleRoot).data('loaded');
 						if (loaded) {
-							$(articleRoot).find('.articleContent').toggle('blind', {}, 500);
+							$(articleRoot).find('.articleContainer').toggle('blind', {}, 500);
 						} else {
 							loadAndShowArticleContent(this);
 						}
 					});
 					$(document).on('click', '.feedTitle', function() {
-						showFeedArticles(this);
+						var feedRoot = this.parentNode;
+						var loaded = $(feedRoot).data('loaded');
+						if (loaded) {
+							$(feedRoot).find('.articleList').toggle('blind', {}, 500);
+						} else {
+							showFeedArticles(this);
+						}						
 					});
 					
 
@@ -139,10 +167,10 @@
 				});
 			});
 	</script>
-
+	<link href="./css/styles.css" rel="stylesheet" type="text/css">
 </head>
 <body>
-	<h1>Read Share Thumbs Up</h1>
+	<h1>Read Share Thumbs Up v0.0</h1>
 	<h2>The Minimalist Social RSS Reader</h2>
 	<div id="controls">
 		<input id="addBox" type="text" />

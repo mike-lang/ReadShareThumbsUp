@@ -1,0 +1,32 @@
+#feedList {
+	list-style: none;
+	padding-left: .5em;
+}
+
+.articleList {
+	list-style: none;
+	margin-left: 1em;
+	padding: .5em 0;
+}
+
+#feedList > li {
+	padding: .3em 0;
+}
+
+.articleContainer {
+	border-left: 1px solid black;
+	margin-bottom: 1em;
+	margin-left: 1em;
+	padding-left: 1em;
+	width: 800px;
+}
+
+.commentBox {
+	height: 3.5em;
+	width: 40em;
+}
+
+.commentControls {
+	margin-bottom: .5em;
+}
+
