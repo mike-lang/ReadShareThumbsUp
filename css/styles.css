@@ -30,3 +30,7 @@
 	margin-bottom: .5em;
 }
 
+.notLoggedIn {
+	display:none;
+}
+
