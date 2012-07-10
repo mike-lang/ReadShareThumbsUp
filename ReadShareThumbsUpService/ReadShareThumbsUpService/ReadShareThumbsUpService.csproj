@@ -78,6 +78,7 @@
     <Compile Include="Misc\Jsonpresult.cs" />
     <Compile Include="Models\AccountModels.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Provider\DummyMembershipProvider.cs" />
     <Compile Include="Provider\IFeedProvider.cs" />
     <Compile Include="Provider\InMemFeedProvider.cs" />
   </ItemGroup>
